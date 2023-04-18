@@ -4,7 +4,7 @@ Installing the package requires the devtools package. Use the following command 
 install.packages("devtools")
 
 
-<B>Installing the tariningLoad package</B>
+<B>Installing the trainingLoad package</B>
 <br>
 The R package can be installed using the following command
 
