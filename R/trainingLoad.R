@@ -201,3 +201,84 @@ accelRate <- function(ax3) {
 
   return(tl)
 }
+
+#'This function estimates the external training load from accelerometry
+#'
+#' \code{velocityLoad} estimates the external training load from accelerometry using ENMO and filtering the data
+#'
+#'
+#' @param ax3 AX3 Accelerometry data
+#' @return tl Training Load
+#' @export
+#' @seealso \code{\link{playerLoad}}
+#'
+velocityLoad <- function(ax3) {
+  vm = sqrt(rowSums(ax3$data[,2:4]^2))
+
+  wnds = ax3$header$frequency * 3
+  #Lets remove gravity and high frequencies
+  #Might want to reduce the high pass filter to 2Hz
+  bf = signal::butter(4,c(0.01/(ax3$header$frequency/2),10/(ax3$header$frequency/2)), type = "pass")
+
+  vmf = caTools::runmean(abs(signal::filtfilt(bf,vm-1)),wnds,align = 'left')
+
+  #Lets estimate MAD in 3 seconds epoch
+
+  vmf = vmf[seq(1,length(vmf),wnds)]
+  tl = sum(vmf)
+
+  return(tl)
+}
+
+#'This function estimates Mean Absolut deviation from accelerometry
+#'
+#' \code{mad} estimates MAD from accelerometry
+#'
+#'
+#' @param ax3 AX3 Accelerometry data
+#' @param epoch Epoch length in seconds - Default is 5 seconds
+#' @return mad data
+#' @export
+#' @seealso \code{\link{playerLoad}}
+#'
+mad <- function(ax3,epoch = 5) {
+  vm = sqrt(rowSums(ax3$data[,2:4]^2))
+
+  wnds = ax3$header$frequency * epoch + 1
+
+  vmf = caTools::runmad(vm,wnds,align = 'left')
+
+  #Lets estimate MAD in 3 seconds epoch
+
+  vmf = vmf[seq(1,length(vmf),wnds)]
+
+  return(vmf)
+}
+
+#'This function estimates Euclidean Norm minus one from accelerometry
+#'
+#' \code{enmo} estimates ENMO from accelerometry
+#'
+#'
+#' @param ax3 AX3 Accelerometry data
+#' @param epoch Epoch length in seconds - Default is 5 seconds
+#' @return enmo data
+#' @export
+#' @seealso \code{\link{playerLoad}}
+#'
+enmo <- function(ax3,epoch = 5) {
+
+  vm = sqrt(rowSums(ax3$data[,2:4]^2))-1
+
+  vm[which(vm<0)] = 0
+
+  wnds = ax3$header$frequency * epoch + 1
+
+  vmf = caTools::runmean(vm,wnds,align = 'left')
+
+  #Lets estimate ENMO in 5 seconds epoch
+
+  vmf = vmf[seq(1,length(vmf),wnds)]
+
+  return(vmf)
+}
