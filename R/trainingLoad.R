@@ -79,8 +79,9 @@ eTRIM <- function(tcxTable, restHR, maxHR, gender) {
   #Categorizing in intensity zones
   res = hist(yirel, c(0,50,60,70,80,90,1000), plot = FALSE)
 
+  #print(res$counts)
   #Estimate the training load
-  tl = sum(res$counts[2:6]*c(1,2,3,4,5))
+  tl = sum(res$counts[1:6]*c(1,2,3,4,5,6))
 
 }
 
