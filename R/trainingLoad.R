@@ -27,7 +27,7 @@
 bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 
   tl = 0;
-  D = (as.numeric(tail(tcxTable$time,1))-as.numeric(tcxTable$time[1]))/60
+  D = (as.numeric(tail(tcxTable$time,1))-as.numeric(tcxTable$time[1]))
   mhr = mean(tcxTable$heart_rate, na.rm = TRUE)
 
   deltaHR = (mhr-restHR)/(maxHR-restHR)
@@ -62,7 +62,7 @@ bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 eTRIM <- function(tcxTable, restHR, maxHR, gender) {
 
   #Time abs from start
-  time = as.numeric(tcxTable$time-tcxTable$time[1])
+  time = as.numeric(tcxTable$time)-as.numeric(tcxTable$time[1])
   #New time
   time2 = seq(time(1),tail(time,1))
 
@@ -80,7 +80,7 @@ eTRIM <- function(tcxTable, restHR, maxHR, gender) {
   res = hist(yirel, c(0,50,60,70,80,90,1000), plot = FALSE)
 
   #Estimate the training load
-  tl = sum(res$counts[2:6]/60*c(1,2,3,4,5))
+  tl = sum(res$counts[2:6]*c(1,2,3,4,5))
 
 }
 
