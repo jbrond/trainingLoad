@@ -28,7 +28,7 @@ bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 
   tl = 0;
   D = (as.numeric(tail(tcxTable$time,1))-as.numeric(tcxTable$time[1]))/60
-  mhr = mean(run2$heart_rate, na.rm = TRUE)
+  mhr = mean(tcxTable$heart_rate, na.rm = TRUE)
 
   deltaHR = (mhr-restHR)/(maxHR-restHR)
 
@@ -62,14 +62,14 @@ bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 eTRIM <- function(tcxTable, restHR, maxHR, gender) {
 
   #Time abs from start
-  time = as.numeric(run2$time-run2$time[1])
+  time = as.numeric(tcxTable$time-tcxTable$time[1])
   #New time
   time2 = seq(time(1),tail(time,1))
 
   defaultW <- getOption("warn")
   options(warn = -1)
   #Lets make sure the data is evenly distributed in seconds
-  yi = interp1(time, run2$heart_rate, xi = time2, method = "nearest")
+  yi = interp1(time, tcxTable$heart_rate, xi = time2, method = "nearest")
 
   options(warn = defaultW)
 
