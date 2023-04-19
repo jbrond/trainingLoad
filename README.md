@@ -22,4 +22,4 @@ For loading Axivity Accelerometry files use the GGIRread package
 library(GGIRread)<br>
 ax3 = readAxivity('ExampleData/ax3.cwa', start=0, end=200)<br>
 
-Start and end with readAxivity is in blocks of 3 seconds. Thus with end=200 and sampling frequency of 100 Hz we get the first 10 minues of data (200*3*100 is 60000 samples)
+Start and end with readAxivity is in blocks of 3 seconds. Thus with end=200 and sampling frequency of 100 Hz we get the first 10 minues of data (200&#42;3&#42;100 is 60000 samples)
