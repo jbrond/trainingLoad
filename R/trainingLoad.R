@@ -19,7 +19,7 @@
 #' @param tcxTable Heart Rate data from tcx file
 #' @param restHR Resting heart rate
 #' @param maxHR Maximum Heart rate
-#' @param gender Gender of the subject
+#' @param gender Gender of the subject 0: Male 1: Female
 #' @return tl Training Load
 #' @export
 #' @seealso \code{\link{eTRIM}}
@@ -27,8 +27,8 @@
 bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 
   tl = 0;
-  D = as.numeric(tcxTable$time[362]-tcxTable$time[1])
-  mhr = mean(run2$heart_rate)
+  D = (as.numeric(tail(tcxTable$time,1))-as.numeric(tcxTable$time[1]))/60
+  mhr = mean(run2$heart_rate, na.rm = TRUE)
 
   deltaHR = (mhr-restHR)/(maxHR-restHR)
 
@@ -53,8 +53,9 @@ bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 #' @param tcxTable Heart Rate data from tcx file
 #' @param restHR Resting heart rate
 #' @param maxHR Maximum Heart rate
-#' @param gender Gender of the subject
+#' @param gender Gender of the subject 0: Male 1: Female
 #' @return tl Training Load
+#' @importFrom pracma interp1
 #' @export
 #' @seealso \code{\link{bTRIM}}
 #'
@@ -65,14 +66,18 @@ eTRIM <- function(tcxTable, restHR, maxHR, gender) {
   #New time
   time2 = seq(time(1),tail(time,1))
 
+  defaultW <- getOption("warn")
+  options(warn = -1)
   #Lets make sure the data is evenly distributed in seconds
-  yi = interp1(time, run2$heart_rate, xi = time2)
+  yi = interp1(time, run2$heart_rate, xi = time2, method = "nearest")
+
+  options(warn = defaultW)
 
   #
   yirel = (yi-restHR)/(maxHR-restHR)*100
 
   #Categorizing in intensity zones
-  res = hist(yirel, c(0,50,60,70,80,90,1000))
+  res = hist(yirel, c(0,50,60,70,80,90,1000), plot = FALSE)
 
   #Estimate the training load
   tl = sum(res$counts[2:6]/60*c(1,2,3,4,5))
@@ -209,6 +214,8 @@ accelRate <- function(ax3) {
 #'
 #' @param ax3 AX3 Accelerometry data
 #' @return tl Training Load
+#' @importFrom signal butter filtfilt
+#' @importFrom caTools runmean
 #' @export
 #' @seealso \code{\link{playerLoad}}
 #'
@@ -237,6 +244,7 @@ velocityLoad <- function(ax3) {
 #'
 #' @param ax3 AX3 Accelerometry data
 #' @param epoch Epoch length in seconds - Default is 5 seconds
+#' @importFrom caTools runmad
 #' @return mad data
 #' @export
 #' @seealso \code{\link{playerLoad}}
@@ -262,6 +270,7 @@ mad <- function(ax3,epoch = 5) {
 #'
 #' @param ax3 AX3 Accelerometry data
 #' @param epoch Epoch length in seconds - Default is 5 seconds
+#' @importFrom caTools runmean
 #' @return enmo data
 #' @export
 #' @seealso \code{\link{playerLoad}}

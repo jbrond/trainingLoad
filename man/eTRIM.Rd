@@ -13,7 +13,7 @@ eTRIM(tcxTable, restHR, maxHR, gender)
 
 \item{maxHR}{Maximum Heart rate}
 
-\item{gender}{Gender of the subject}
+\item{gender}{Gender of the subject 0: Male 1: Female}
 }
 \value{
 tl Training Load

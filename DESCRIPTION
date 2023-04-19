@@ -9,6 +9,9 @@ License: GPL
 Encoding: UTF-8
 Imports: 
   signal,
-  caTools
+  caTools,
+  trackeR,
+  GGIRread,
+  pracma
 LazyData: true
 RoxygenNote: 7.2.3
