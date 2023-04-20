@@ -2,7 +2,7 @@
 % Please edit documentation in R/trainingLoad.R
 \name{bTRIM}
 \alias{bTRIM}
-\title{This function estimates the Banister Training Impulse}
+\title{This function estimates the Banister Training Impulse (TRIM)}
 \usage{
 bTRIM(tcxTable, restHR, maxHR, gender)
 }
@@ -19,7 +19,7 @@ bTRIM(tcxTable, restHR, maxHR, gender)
 tl Training Load
 }
 \description{
-\code{bTRIM} Estimates the Banister Training Impulse
+\code{bTRIM} Estimates the Banister Training Impulse (TRIM)
 }
 \seealso{
 \code{\link{eTRIM}}

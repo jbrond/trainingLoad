@@ -3,6 +3,7 @@
 export(accelRate)
 export(bTRIM)
 export(eTRIM)
+export(eTRIMspecial)
 export(enmo)
 export(impulseLoad)
 export(mad)

@@ -11,9 +11,9 @@
 #   Check Package:             'Cmd + Shift + E'
 #   Test Package:              'Cmd + Shift + T'
 
-#'This function estimates the Banister Training Impulse
+#'This function estimates the Banister Training Impulse (TRIM)
 #'
-#' \code{bTRIM} Estimates the Banister Training Impulse
+#' \code{bTRIM} Estimates the Banister Training Impulse (TRIM)
 #'
 #'
 #' @param tcxTable Heart Rate data from tcx file
@@ -45,9 +45,9 @@ bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 }
 
 
-#'This function estimates the intensity distribution Training Impulse
+#'This function estimates the Edwards intensity distribution Training Impulse
 #'
-#' \code{bTRIM} Estimates the intensity distribution Training Impulse
+#' \code{eTRIM} Estimates the Edwards intensity distribution Training Impulse
 #'
 #'
 #' @param tcxTable Heart Rate data from tcx file
@@ -60,6 +60,46 @@ bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 #' @seealso \code{\link{bTRIM}}
 #'
 eTRIM <- function(tcxTable, restHR, maxHR, gender) {
+
+  #Time abs from start
+  time = as.numeric(tcxTable$time)-as.numeric(tcxTable$time[1])
+  #New time
+  time2 = seq(time(1),tail(time,1))
+
+  defaultW <- getOption("warn")
+  options(warn = -1)
+  #Lets make sure the data is evenly distributed in seconds
+  yi = interp1(time, tcxTable$heart_rate, xi = time2, method = "nearest")
+
+  options(warn = defaultW)
+
+  #
+  yirel = (yi-restHR)/(maxHR-restHR)*100
+
+  #Categorizing in intensity zones
+  res = hist(yirel, c(0,50,60,70,80,90,1000), plot = FALSE)
+
+  #print(res$counts)
+  #Estimate the training load
+  tl = sum(res$counts[2:6]*c(1,2,3,4,5))
+
+}
+
+#'This function estimates the Edwards intensity distribution Training Impulse
+#'
+#' \code{eTRIMspecial} Estimates the Edwards intensity distribution Training Impulse
+#'
+#'
+#' @param tcxTable Heart Rate data from tcx file
+#' @param restHR Resting heart rate
+#' @param maxHR Maximum Heart rate
+#' @param gender Gender of the subject 0: Male 1: Female
+#' @return tl Training Load
+#' @importFrom pracma interp1
+#' @export
+#' @seealso \code{\link{bTRIM}}
+#'
+eTRIMspecial <- function(tcxTable, restHR, maxHR, gender) {
 
   #Time abs from start
   time = as.numeric(tcxTable$time)-as.numeric(tcxTable$time[1])
