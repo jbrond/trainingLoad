@@ -43,8 +43,6 @@ bTRIM <- function(tcxTable, restHR, maxHR, gender) {
 
   return(tl)
 }
-
-
 #'This function estimates the Edwards intensity distribution Training Impulse
 #'
 #' \code{eTRIM} Estimates the Edwards intensity distribution Training Impulse
@@ -246,6 +244,152 @@ accelRate <- function(ax3) {
   tl = sum(abs(diff(vm)))
 
   return(tl)
+}
+#'This function estimates the external training load from accelerometry for all files in the given folder
+#'
+#' \code{batchTraingLoad} estimates the external training load from accelerometry for all files in the given folder
+#'
+#'
+#' @param folder Folder to the directory containing the Axivity files
+#' @param startTime time in seconds for when to start recording
+#' @param endTime time in seconds for when to end the recording
+#' @return df Training Load for all files in the folder
+#' @importFrom GGIRread readAxivity
+#' @export
+#' @seealso \code{\link{playerLoad}}
+#'
+batchTraingLoad <- function(folder,startTime=0,endTime=200) {
+
+  cwaFiles <- list.files(folder,pattern = ".cwa")
+
+  if (length(cwaFiles)==0)
+  {
+    print("No files found in the source folder!");
+    return(0)
+  }
+
+  myFileSep = .Platform$file.sep;
+  #Fixing the windows backslah problem
+  #The Matlab code requires backslash!!
+  if (.Platform$OS.type=="windows") {
+    #Need to fix the backslash part
+    destinationdir = gsub("/", "\\\\", destinationdir)
+    folder = gsub("/", "\\\\", folder)
+
+    myFileSep = "\\"
+  }
+
+  N <- length(cwaFiles)
+  df <- data.frame(ID = character(N),
+                                pl = double(N),
+             plMAG = double(N),
+             plSUM = double(N),
+             vl = double(N),
+             il = double(N),
+             stringsAsFactors = FALSE)
+
+  #invisible(lapply(cwaFiles, print))
+  i = 1
+  for (file in cwaFiles) {
+    filename = sprintf("%s%s%s",folder,myFileSep,file)
+
+    ryg = readAxivity(filename, start=startTime, end=endTime)
+
+    print(file)
+
+    df$ID[i] = gsub('.cwa','',file);
+    df$pl[i] = playerLoad(ryg)
+    df$plMAG[i] = playerLoadMAG(ryg)
+    df$plSUM[i] = playerLoadSUM(ryg)
+    df$vl[i] = velocityLoad(ryg)
+    df$il[i] = impulseLoad(ryg)
+
+    i = i +1
+  }
+
+  return(df)
+}
+#'This function estimates TRIM from garmin tcx for all files in the given folder
+#'
+#' \code{batchTRIM} estimates TRIM from accelerometry for all files in the given folder
+#'
+#'
+#' @param folder Folder to the directory containing the Axivity files
+#' @param subd data.fram containing the subject ID, restHR, maxHR and gender information. ID must be the same as the file name
+#' @return df TRIM for all files in the folder
+#' @importFrom trackeR readTCX
+#' @export
+#' @seealso \code{\link{bTRIM,eTRIM,eTRIMSpecial}}
+#'
+batchTRIM <- function(folder,subd=0) {
+
+  tcxFiles <- list.files(folder,pattern = ".tcx")
+
+  if (length(tcxFiles)==0)
+  {
+    print("No files found in the source folder!");
+    return(0)
+  }
+
+  myFileSep = .Platform$file.sep;
+  #Fixing the windows backslah problem
+  #The Matlab code requires backslash!!
+  if (.Platform$OS.type=="windows") {
+    #Need to fix the backslash part
+    destinationdir = gsub("/", "\\\\", destinationdir)
+    folder = gsub("/", "\\\\", folder)
+
+    myFileSep = "\\"
+  }
+
+  N <- length(tcxFiles)
+  df <- data.frame(ID = character(N),
+                   bTRIM = double(N),
+                   eTRIM = double(N),
+                   eTRIMs = double(N),
+                   restHR = double(N),
+                   maxHR = double(N),
+                   gender = double(N),
+                   stringsAsFactors = FALSE)
+
+  #invisible(lapply(cwaFiles, print))
+  i = 1
+  for (file in tcxFiles) {
+    filename = sprintf("%s%s%s",folder,myFileSep,file)
+
+    garmin = readTCX(filename)
+
+    print(file)
+
+    ID = as.numeric(gsub('.tcx','',file))
+
+    idx <- (which(subd$ID==ID))
+
+    #Default values
+    restHR = 50
+    maxHR = 180
+    gender = 0
+
+    if (length(idx)>0) {
+
+      restHR = subd$restHR[idx]
+      maxHR = subd$maxHR[idx]
+      gender = subd$Gender[idx]
+    }
+
+    df$ID[i] = gsub('.tcx','',file);
+    df$bTRIM[i] = bTRIM(garmin,restHR,maxHR,gender)
+    df$eTRIM[i] = eTRIM(garmin,restHR,maxHR,gender)
+    df$eTRIMs[i] = eTRIMspecial(garmin,restHR,maxHR,gender)
+    df$restHR[i] = restHR
+    df$maxHR[i] = maxHR
+    df$gender[i] = gender
+    df$Distance[i] = tail(garmin$distance,1)
+
+    i = i +1
+  }
+
+  return(df)
 }
 
 #'This function estimates the external training load from accelerometry

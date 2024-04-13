@@ -1,7 +1,7 @@
 Package: trainingLoad
 Type: Package
 Title: This package provides function to estimate internal and external training load from heart rate data and accelerometry
-Version: 0.1.0
+Version: 0.2.0
 Author: Jan Christian Brønd
 Maintainer: Jan Christian Brønd <jbrond@health.sdu.dk>
 Description: This package provides function to estimate internal and external training load from heart rate data and accelerometry
@@ -12,6 +12,7 @@ Imports:
   caTools,
   trackeR,
   GGIRread,
-  pracma
+  pracma,
+  trackeR
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
