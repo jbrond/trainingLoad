@@ -273,7 +273,6 @@ batchTraingLoad <- function(folder,startTime=0,endTime=200) {
   #The Matlab code requires backslash!!
   if (.Platform$OS.type=="windows") {
     #Need to fix the backslash part
-    destinationdir = gsub("/", "\\\\", destinationdir)
     folder = gsub("/", "\\\\", folder)
 
     myFileSep = "\\"
@@ -336,7 +335,6 @@ batchTRIM <- function(folder,subd=0) {
   #The Matlab code requires backslash!!
   if (.Platform$OS.type=="windows") {
     #Need to fix the backslash part
-    destinationdir = gsub("/", "\\\\", destinationdir)
     folder = gsub("/", "\\\\", folder)
 
     myFileSep = "\\"
