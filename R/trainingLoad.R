@@ -143,7 +143,8 @@ playerLoad <- function(ax3) {
   return(tl)
 }
 
-#'This function estimates the external training load from accelerometry
+#'This function estimates the external training load from accelerometry and filtering the
+#'data with a
 #'
 #' \code{playerLoad2} estimates the external training load from accelerometry
 #'
@@ -154,9 +155,13 @@ playerLoad <- function(ax3) {
 #' @seealso \code{\link{accelRate}}
 #'
 playerLoad2 <- function(ax3) {
-  dax = diff(ax3$data$x)^2
-  day = diff(ax3$data$y)^2
-  daz = diff(ax3$data$z)^2
+
+  #Estimating the filter coeeficients
+  bf = signal::butter(4,10/(ax3$header$frequency/2), type = "low")
+
+  dax = diff(signal::filtfilt(bf,ax3$data$x))^2
+  day = diff(signal::filtfilt(bf,ax3$data$y))^2
+  daz = diff(signal::filtfilt(bf,ax3$data$z))^2
 
   tl = sum(sqrt(dax+day+daz)/100)
 

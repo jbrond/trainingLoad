@@ -1,7 +1,7 @@
 Package: trainingLoad
 Type: Package
 Title: This package provides function to estimate internal and external training load from heart rate data and accelerometry
-Version: 0.2.1
+Version: 0.2.2
 Author: Jan Christian Brønd
 Maintainer: Jan Christian Brønd <jbrond@health.sdu.dk>
 Description: This package provides function to estimate internal and external training load from heart rate data and accelerometry
